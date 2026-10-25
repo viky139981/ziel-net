@@ -1797,10 +1797,84 @@ bottom:calc(64px + var(--mobile-safe-bottom))
  .mobile-menu-heading{margin:18px 0 9px;color:#777b9d;font-size:.77rem;font-weight:800}
  .petty-note{margin:12px 0;padding:13px 15px;border:1px solid #e4e3f8;border-radius:12px;background:#f8f7ff;color:#535574;font-size:.82rem;line-height:1.55}
  .petty-alert{border-color:#ffd49b;background:#fff6e9;color:#935808}
- .petty-summary{display:grid;grid-template-columns:repeat(4,minmax(0,1fr));gap:12px;margin:15px 0}
- .petty-summary .card{min-width:0}
- .petty-summary .card strong{font-size:clamp(1.05rem,1.8vw,1.45rem);overflow-wrap:anywhere}
- .petty-summary .card small{display:block;margin-top:7px;color:var(--muted);font-size:.73rem}
+ .petty-summary{display:grid;grid-template-columns:repeat(4,minmax(0,1fr));gap:14px;margin:15px 0}
+ .petty-summary .card,
+ .petty-book-summary .card{
+   position:relative;
+   min-width:0;
+   overflow:hidden;
+   border:1px solid transparent;
+   transition:transform .22s ease,box-shadow .22s ease,border-color .22s ease;
+   will-change:transform;
+ }
+ .petty-summary .card::after,
+ .petty-book-summary .card::after{
+   content:"";
+   position:absolute;
+   right:-34px;
+   bottom:-46px;
+   width:116px;
+   height:116px;
+   border-radius:50%;
+   background:currentColor;
+   opacity:.07;
+   pointer-events:none;
+ }
+ .petty-summary .card:hover,
+ .petty-book-summary .card:hover{
+   transform:translateY(-5px) scale(1.012);
+   box-shadow:0 18px 36px rgba(31,38,79,.14);
+ }
+ .petty-summary .card strong,
+ .petty-book-summary .card strong{
+   position:relative;
+   z-index:1;
+   font-size:clamp(1.05rem,1.8vw,1.45rem);
+   overflow-wrap:anywhere;
+ }
+ .petty-summary .card small,
+ .petty-book-summary .card small{
+   position:relative;
+   z-index:1;
+   display:block;
+   margin-top:7px;
+   color:var(--muted);
+   font-size:.73rem;
+ }
+
+ /* Warna card Petty Cash */
+ .petty-summary .card:nth-child(1),
+ .petty-book-summary .card:nth-child(1){
+   color:#6245d8;
+   border-color:#ded6ff;
+   background:linear-gradient(145deg,#ffffff 0%,#f3efff 100%);
+ }
+ .petty-summary .card:nth-child(2),
+ .petty-book-summary .card:nth-child(2){
+   color:#078b66;
+   border-color:#cceee3;
+   background:linear-gradient(145deg,#ffffff 0%,#edf9f5 100%);
+ }
+ .petty-summary .card:nth-child(3),
+ .petty-book-summary .card:nth-child(3){
+   color:#dc7610;
+   border-color:#ffe0bd;
+   background:linear-gradient(145deg,#ffffff 0%,#fff5e9 100%);
+ }
+ .petty-summary .card:nth-child(4),
+ .petty-book-summary .card:nth-child(4){
+   color:#176fd1;
+   border-color:#cfe3ff;
+   background:linear-gradient(145deg,#ffffff 0%,#eef6ff 100%);
+ }
+ .petty-summary .card:hover:nth-child(1),
+ .petty-book-summary .card:hover:nth-child(1){border-color:#c9bbff}
+ .petty-summary .card:hover:nth-child(2),
+ .petty-book-summary .card:hover:nth-child(2){border-color:#9edfc9}
+ .petty-summary .card:hover:nth-child(3),
+ .petty-book-summary .card:hover:nth-child(3){border-color:#ffc985}
+ .petty-summary .card:hover:nth-child(4),
+ .petty-book-summary .card:hover:nth-child(4){border-color:#9fc8ff}
  .petty-amount{font-weight:800;white-space:nowrap}
  .currency-input-wrap{position:relative}
  .currency-input-wrap .currency-prefix{position:absolute;left:12px;top:50%;transform:translateY(-50%);z-index:1;color:#66758b;font-weight:700;pointer-events:none}
@@ -1811,7 +1885,6 @@ bottom:calc(64px + var(--mobile-safe-bottom))
  .petty-book-filter{display:grid;grid-template-columns:180px minmax(180px,280px) auto;gap:12px;align-items:end;margin:14px 0 16px}
  .petty-book-filter .field{min-width:0;max-width:none}
  .petty-book-summary{display:grid;grid-template-columns:repeat(4,minmax(0,1fr));gap:12px;margin:15px 0}
- .petty-book-summary .card strong{font-size:clamp(1.05rem,1.8vw,1.45rem)}
  .cashbook-in{color:#07875f;font-weight:800;white-space:nowrap}
  .cashbook-out{color:#c83d50;font-weight:800;white-space:nowrap}
  .cashbook-balance{font-weight:900;white-space:nowrap}
