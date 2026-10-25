@@ -1720,15 +1720,20 @@ function pettyBookRange(transactions) {
 function pettyBook() {
   const transactions=pettyTransactions();
   const range=pettyBookRange(transactions);
-  const before=range.start?transactions.filter(item=>item.date<range.start):[];
   const visible=transactions.filter(item=>(!range.start||item.date>=range.start)&&(!range.end||item.date<=range.end));
   const net=item=>(Number(item.income)||0)-(Number(item.expense)||0);
   const sum=(items,key)=>items.reduce((total,item)=>total+(Number(item[key])||0),0);
-  const opening=before.reduce((total,item)=>total+net(item),0);
+
+  // Seluruh ringkasan Buku Kas mengikuti filter yang sedang aktif.
+  // Saldo Kas Berjalan berasal dari pemasukan pada periode filter.
   const income=sum(visible,'income');
   const expense=sum(visible,'expense');
-  const closing=opening+income-expense;
-  let running=opening;
+  const cashRunning=income;
+  const closing=cashRunning-expense;
+
+  // Saldo pada tabel juga dimulai dari Rp 0 untuk setiap periode filter.
+  // Dengan demikian filter tanggal/bulan/tahun menampilkan mutasi periode itu saja.
+  let running=0;
   const rows=visible.map(item=>{
     running+=net(item);
     const description=`${esc(item.description)}<div class="cashbook-ref">${esc(item.kind)} · ${esc(item.recordedBy)}</div>`;
@@ -1738,15 +1743,22 @@ function pettyBook() {
       <td class="cashbook-out">${item.expense?rup(item.expense):'—'}</td>
       <td class="cashbook-balance">${rup(running)}</td></tr>`;
   }).join('');
+
+  const incomeCount=visible.filter(x=>x.income).length;
+  const expenseCount=visible.filter(x=>x.expense).length;
   const filter=state.pettyBookFilter;
   $('content').innerHTML=`<div class="row"><div><h1 style="margin-bottom:4px">Petty Cash · Buku Kas</h1>
       <div class="muted">${esc(range.label)} · ${visible.length} transaksi</div></div></div>
     ${pettyReadyNotice()}${pettyCaution()}
     <section class="petty-book-summary">
-      <article class="card">Saldo awal<strong>${rup(opening)}</strong><small>Akumulasi sebelum periode filter</small></article>
-      <article class="card">Pemasukan<strong>${rup(income)}</strong><small>${visible.filter(x=>x.income).length} transaksi pemasukan</small></article>
-      <article class="card">Pengeluaran<strong>${rup(expense)}</strong><small>${visible.filter(x=>x.expense).length} transaksi pengeluaran</small></article>
-      <article class="card">Saldo akhir<strong>${rup(closing)}</strong><small>Saldo awal + pemasukan − pengeluaran</small></article>
+      <article class="card">Saldo Kas Berjalan<strong>${rup(cashRunning)}</strong>
+        <small>Berasal dari ${incomeCount} transaksi pemasukan pada periode filter</small></article>
+      <article class="card">Pemasukan<strong>${rup(income)}</strong>
+        <small>${incomeCount} transaksi pemasukan pada periode filter</small></article>
+      <article class="card">Pengeluaran<strong>${rup(expense)}</strong>
+        <small>${expenseCount} transaksi pengeluaran pada periode filter</small></article>
+      <article class="card">Saldo Akhir<strong>${rup(closing)}</strong>
+        <small>Saldo Kas Berjalan − Pengeluaran</small></article>
     </section>
     <section class="panel petty-book-filter no-print">
       <div class="field"><label>Filter Buku Kas</label><select id="pettyBookMode">
@@ -1763,7 +1775,7 @@ function pettyBook() {
             ? `<label>Pilih tahun</label><input id="pettyBookYear" type="number" min="2000" max="2100" step="1" value="${esc(filter.year)}">`
             : '<label>Periode</label><div class="muted" style="padding:11px 0">Menampilkan seluruh transaksi sejak 1 Oktober 2026.</div>'}
       </div>
-      <div class="petty-filter-caption muted">Saldo berjalan dihitung sejak awal pencatatan Petty Cash, 1 Oktober 2026.</div>
+      <div class="petty-filter-caption muted">Saldo Kas Berjalan, pemasukan, pengeluaran, saldo akhir, dan mutasi tabel mengikuti Filter Buku Kas yang dipilih.</div>
     </section>
     <h2>Mutasi Buku Kas</h2>
     ${table(['Tanggal','Keterangan','Referensi','Metode','Pemasukan','Pengeluaran','Saldo'],rows)}`;
@@ -1949,4 +1961,3 @@ async function logs() {
 
 if (state.token) reload();
 else showLogin();
-
