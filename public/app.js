@@ -1545,16 +1545,9 @@ function pettyExpenses() {
       <td>${esc(exp.Metode_Bayar)}</td><td class="petty-amount">${rup(exp.Nominal)}</td>
       <td>${badge(exp.Status)}</td><td>${esc(exp.Dicatat_Oleh)}</td><td>${actions}</td></tr>`;
   }).join('');
-  const barang=f.expensesPeriod.filter(e=>e.Kategori==='Pembelian Barang');
-  const operasional=f.expensesPeriod.filter(e=>e.Kategori==='Operasional');
-  const sum=arr=>arr.reduce((n,e)=>n+(Number(e.Nominal)||0),0);
   $('content').innerHTML=`<div class="row"><h1>Petty Cash · Pengeluaran</h1>
     ${state.data.pettyCashReady?'<button class="right" id="newExpense">+ Catat pengeluaran</button>':''}</div>
     ${pettyReadyNotice()}${pettyCaution()}${pettyMetricCards(f)}
-    <div class="row"><div class="card" style="flex:1;min-width:180px">Pembelian Barang
-      <strong>${rup(sum(barang))}</strong><small class="muted">${barang.length} transaksi aktif</small></div>
-      <div class="card" style="flex:1;min-width:180px">Operasional
-      <strong>${rup(sum(operasional))}</strong><small class="muted">${operasional.length} transaksi aktif</small></div></div>
     ${pettyPeriodPicker(f)}
     <div class="row"><div class="field"><label>Filter kategori</label>
       <select id="pettyCategoryFilter"><option value="">Semua kategori</option>
