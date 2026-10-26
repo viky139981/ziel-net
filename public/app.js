@@ -1509,14 +1509,23 @@ function stat3dPointerMove(event) {
   const rect = card.getBoundingClientRect();
   const px = Math.max(0, Math.min(1, (event.clientX - rect.left) / rect.width));
   const py = Math.max(0, Math.min(1, (event.clientY - rect.top) / rect.height));
-  const rotateY = (px - .5) * 12;
-  const rotateX = (.5 - py) * 9;
+  // Tilt dibuat lebih tegas agar arah cursor benar-benar terasa.
+  // Nilai maksimum kira-kira ±11° Y dan ±9° X.
+  const rotateY = (px - .5) * 22;
+  const rotateX = (.5 - py) * 18;
+
+  // Sedikit translasi mengikuti cursor menambah kesan card "mengejar" pointer.
+  const moveX = (px - .5) * 8;
+  const moveY = (py - .5) * 6;
+
   const cx = px - .5;
   const cy = py - .5;
   const angle = Math.atan2(cy, cx) * 180 / Math.PI + 90;
 
   card.style.setProperty('--stat-rx', rotateX.toFixed(2) + 'deg');
   card.style.setProperty('--stat-ry', rotateY.toFixed(2) + 'deg');
+  card.style.setProperty('--stat-tx', moveX.toFixed(2) + 'px');
+  card.style.setProperty('--stat-ty', moveY.toFixed(2) + 'px');
   card.style.setProperty('--gx', (px * 100).toFixed(1) + '%');
   card.style.setProperty('--gy', (py * 100).toFixed(1) + '%');
   card.style.setProperty('--shine-angle', angle.toFixed(2) + 'deg');
@@ -1528,6 +1537,8 @@ function stat3dPointerOut(event) {
   if (event.relatedTarget && card.contains(event.relatedTarget)) return;
   card.style.setProperty('--stat-rx', '0deg');
   card.style.setProperty('--stat-ry', '0deg');
+  card.style.setProperty('--stat-tx', '0px');
+  card.style.setProperty('--stat-ty', '0px');
   card.style.setProperty('--gx', '50%');
   card.style.setProperty('--gy', '50%');
   card.style.setProperty('--shine-angle', '135deg');
