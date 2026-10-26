@@ -565,6 +565,15 @@ function rupCompact(value) {
   return 'Rp' + format(amount);
 }
 
+function stat3dChrome(tone = 'zinc') {
+  return `
+    <div class="stat-3d-shine" aria-hidden="true"></div>
+    <div class="stat-3d-glare" aria-hidden="true"></div>
+    <div class="puma-banner puma-banner-${tone}" aria-hidden="true">
+      <span></span><span></span><span></span>
+    </div>`;
+}
+
 function miniSparkline(shape = 0) {
   const paths = [
     'M2 24 C10 20 13 12 22 16 S34 22 42 13 S55 8 62 12 S72 5 82 7',
@@ -815,14 +824,17 @@ function dashboard() {
     </section>
     <section class="dashboard-kpis">
       ${cards.map((card, index) => `
-        <article class="metric-card ${card.tone}">
-          <div class="metric-top">
-            <span class="metric-icon">${icon(card.icon)}</span>
-            ${miniSparkline(index)}
+        <article class="metric-card ${card.tone} stat-3d-card stat-puma-card stat-card-${card.tone}">
+          ${stat3dChrome(card.tone)}
+          <div class="stat-card-content">
+            <div class="metric-top">
+              <span class="metric-icon">${icon(card.icon)}</span>
+              ${miniSparkline(index)}
+            </div>
+            <span class="metric-label">${esc(card.label)}</span>
+            <strong class="metric-value">${esc(card.value)}</strong>
+            <span class="metric-foot"><b>↗</b>${esc(card.foot)}</span>
           </div>
-          <span class="metric-label">${esc(card.label)}</span>
-          <strong class="metric-value">${esc(card.value)}</strong>
-          <span class="metric-foot"><b>↗</b>${esc(card.foot)}</span>
         </article>`).join('')}
     </section>
     <section class="dashboard-grid">
@@ -1470,16 +1482,25 @@ function pettyPeriodPicker(finance) {
     </div></div>`;
 }
 function pettyMetricCards(finance) {
-  return `<div class="petty-summary">
-    <article class="card stat-3d-card">Pemasukan / Top Up<strong>${rup(finance.incomePeriodTotal)}</strong>
-      <small>${finance.incomesPeriod.length} pembayaran pelanggan pada periode pilihan</small></article>
-    <article class="card stat-3d-card">Pengeluaran<strong>${rup(finance.expensePeriodTotal)}</strong>
-      <small>${finance.expensesPeriod.length} transaksi aktif pada periode pilihan</small></article>
-    <article class="card stat-3d-card">Selisih periode<strong>${rup(finance.incomePeriodTotal-finance.expensePeriodTotal)}</strong>
-      <small>Pemasukan periode dikurangi pengeluaran periode</small></article>
-    <article class="card stat-3d-card">Saldo bersih tercatat<strong>${rup(finance.balance)}</strong>
-      <small>Akumulasi semua periode yang tersedia</small></article>
-  </div>`;
+  const items = [
+    {tone:'green', label:'Pemasukan / Top Up', value:rup(finance.incomePeriodTotal),
+      note:`${finance.incomesPeriod.length} pembayaran pelanggan pada periode pilihan`},
+    {tone:'orange', label:'Pengeluaran', value:rup(finance.expensePeriodTotal),
+      note:`${finance.expensesPeriod.length} transaksi aktif pada periode pilihan`},
+    {tone:'purple', label:'Selisih periode', value:rup(finance.incomePeriodTotal-finance.expensePeriodTotal),
+      note:'Pemasukan periode dikurangi pengeluaran periode'},
+    {tone:'blue', label:'Saldo bersih tercatat', value:rup(finance.balance),
+      note:'Akumulasi semua periode yang tersedia'}
+  ];
+  return `<div class="petty-summary">${items.map(item => `
+    <article class="card stat-3d-card stat-puma-card stat-card-${item.tone}">
+      ${stat3dChrome(item.tone)}
+      <div class="stat-card-content">
+        <span class="stat-label">${esc(item.label)}</span>
+        <strong class="stat-value">${esc(item.value)}</strong>
+        <small>${esc(item.note)}</small>
+      </div>
+    </article>`).join('')}</div>`;
 }
 function stat3dPointerMove(event) {
   if (!window.matchMedia('(hover:hover) and (pointer:fine)').matches) return;
@@ -1488,12 +1509,17 @@ function stat3dPointerMove(event) {
   const rect = card.getBoundingClientRect();
   const px = Math.max(0, Math.min(1, (event.clientX - rect.left) / rect.width));
   const py = Math.max(0, Math.min(1, (event.clientY - rect.top) / rect.height));
-  const rotateY = (px - .5) * 10;
-  const rotateX = (.5 - py) * 8;
+  const rotateY = (px - .5) * 12;
+  const rotateX = (.5 - py) * 9;
+  const cx = px - .5;
+  const cy = py - .5;
+  const angle = Math.atan2(cy, cx) * 180 / Math.PI + 90;
+
   card.style.setProperty('--stat-rx', rotateX.toFixed(2) + 'deg');
   card.style.setProperty('--stat-ry', rotateY.toFixed(2) + 'deg');
-  card.style.setProperty('--stat-mx', (px * 100).toFixed(1) + '%');
-  card.style.setProperty('--stat-my', (py * 100).toFixed(1) + '%');
+  card.style.setProperty('--gx', (px * 100).toFixed(1) + '%');
+  card.style.setProperty('--gy', (py * 100).toFixed(1) + '%');
+  card.style.setProperty('--shine-angle', angle.toFixed(2) + 'deg');
 }
 
 function stat3dPointerOut(event) {
@@ -1502,8 +1528,9 @@ function stat3dPointerOut(event) {
   if (event.relatedTarget && card.contains(event.relatedTarget)) return;
   card.style.setProperty('--stat-rx', '0deg');
   card.style.setProperty('--stat-ry', '0deg');
-  card.style.setProperty('--stat-mx', '50%');
-  card.style.setProperty('--stat-my', '50%');
+  card.style.setProperty('--gx', '50%');
+  card.style.setProperty('--gy', '50%');
+  card.style.setProperty('--shine-angle', '135deg');
 }
 
 document.addEventListener('pointermove', stat3dPointerMove);
@@ -1772,14 +1799,26 @@ function pettyBook() {
       <div class="muted">${esc(range.label)} · ${visible.length} transaksi</div></div></div>
     ${pettyReadyNotice()}${pettyCaution()}
     <section class="petty-book-summary">
-      <article class="card stat-3d-card">Saldo Kas Berjalan<strong>${rup(cashRunning)}</strong>
-        <small>Berasal dari ${incomeCount} transaksi pemasukan pada periode filter</small></article>
-      <article class="card stat-3d-card">Pemasukan<strong>${rup(income)}</strong>
-        <small>${incomeCount} transaksi pemasukan pada periode filter</small></article>
-      <article class="card stat-3d-card">Pengeluaran<strong>${rup(expense)}</strong>
-        <small>${expenseCount} transaksi pengeluaran pada periode filter</small></article>
-      <article class="card stat-3d-card">Saldo Akhir<strong>${rup(closing)}</strong>
-        <small>Saldo Kas Berjalan − Pengeluaran</small></article>
+      <article class="card stat-3d-card stat-puma-card stat-card-purple">
+        ${stat3dChrome('purple')}
+        <div class="stat-card-content"><span class="stat-label">Saldo Kas Berjalan</span>
+          <strong class="stat-value">${rup(cashRunning)}</strong>
+          <small>Berasal dari ${incomeCount} transaksi pemasukan pada periode filter</small></div></article>
+      <article class="card stat-3d-card stat-puma-card stat-card-green">
+        ${stat3dChrome('green')}
+        <div class="stat-card-content"><span class="stat-label">Pemasukan</span>
+          <strong class="stat-value">${rup(income)}</strong>
+          <small>${incomeCount} transaksi pemasukan pada periode filter</small></div></article>
+      <article class="card stat-3d-card stat-puma-card stat-card-orange">
+        ${stat3dChrome('orange')}
+        <div class="stat-card-content"><span class="stat-label">Pengeluaran</span>
+          <strong class="stat-value">${rup(expense)}</strong>
+          <small>${expenseCount} transaksi pengeluaran pada periode filter</small></div></article>
+      <article class="card stat-3d-card stat-puma-card stat-card-blue">
+        ${stat3dChrome('blue')}
+        <div class="stat-card-content"><span class="stat-label">Saldo Akhir</span>
+          <strong class="stat-value">${rup(closing)}</strong>
+          <small>Saldo Kas Berjalan − Pengeluaran</small></div></article>
     </section>
     <section class="panel petty-book-filter no-print">
       <div class="field"><label>Filter Buku Kas</label><select id="pettyBookMode">
