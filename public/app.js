@@ -838,11 +838,13 @@ function dashboard() {
         </article>`).join('')}
     </section>
     <section class="dashboard-grid">
-      <article class="dashboard-panel">
-        <div class="panel-heading">
-          <h2>Status pelanggan</h2><span>Data aktual</span>
-        </div>
-        <div class="donut-layout">
+      <article class="dashboard-panel dashboard-3d-panel stat-3d-card stat-puma-card stat-card-green">
+        ${stat3dChrome('green')}
+        <div class="dashboard-panel-3d-content">
+          <div class="panel-heading">
+            <h2>Status pelanggan</h2><span>Data aktual</span>
+          </div>
+          <div class="donut-layout">
           <div class="donut" style="--donut:${donut}">
             <div class="donut-center">
               <strong>${totalStatus}</strong><span>Total pelanggan</span>
@@ -865,59 +867,78 @@ function dashboard() {
               <strong>${metrics.isolated}</strong>
             </div>
           </div>
+          </div>
         </div>
       </article>
-      <article class="dashboard-panel">
-        <div class="panel-heading">
-          <h2>Tren tagihan</h2><span>6 periode terakhir</span>
-        </div>
+      <article class="dashboard-panel dashboard-3d-panel stat-3d-card stat-puma-card stat-card-purple">
+        ${stat3dChrome('purple')}
+        <div class="dashboard-panel-3d-content">
+          <div class="panel-heading">
+            <h2>Tren tagihan</h2><span>6 periode terakhir</span>
+          </div>
         <div class="trend-wrap">${trendChart(trend)}</div>
-        <div class="chart-legend">
-          <span><i class="legend-line" style="background:#7047eb"></i>Tagihan dibuat</span>
-          <span><i class="legend-line" style="background:#12b981"></i>Sudah lunas</span>
+          <div class="chart-legend">
+            <span><i class="legend-line" style="background:#7047eb"></i>Tagihan dibuat</span>
+            <span><i class="legend-line" style="background:#12b981"></i>Sudah lunas</span>
+          </div>
         </div>
       </article>
     </section>
-    <section class="dashboard-panel billing-overview">
+    <section class="dashboard-panel billing-overview dashboard-3d-frame stat-puma-card stat-card-zinc">
+      ${stat3dChrome('zinc')}
+      <div class="dashboard-panel-3d-content dashboard-billing-content">
       <div class="panel-heading">
         <h2>Ringkasan penagihan ${esc(month(currentPeriod))}</h2>
         <span>${currentInvoices.length} tagihan</span>
       </div>
       <div class="billing-cards">
-        <div class="billing-mini">
-          <div class="billing-mini-top">
-            <span class="billing-mini-icon" style="color:#7047eb;background:#eee9ff">%</span>
-            <span>Tingkat tertagih</span>
+        <div class="billing-mini stat-3d-card stat-puma-card stat-card-purple">
+          ${stat3dChrome('purple')}
+          <div class="billing-mini-3d-content">
+            <div class="billing-mini-top">
+              <span class="billing-mini-icon" style="color:#7047eb;background:#eee9ff">%</span>
+              <span>Tingkat tertagih</span>
+            </div>
+            <strong>${collectionRate}%</strong><small>${rup(paidValue)} diterima</small>
+            <div class="progress"><span style="width:${collectionRate}%;background:#7047eb"></span></div>
           </div>
-          <strong>${collectionRate}%</strong><small>${rup(paidValue)} diterima</small>
-          <div class="progress"><span style="width:${collectionRate}%;background:#7047eb"></span></div>
         </div>
-        <div class="billing-mini">
-          <div class="billing-mini-top">
-            <span class="billing-mini-icon" style="color:#0ba875;background:#e5faf2">✓</span>
-            <span>Tagihan lunas</span>
+        <div class="billing-mini stat-3d-card stat-puma-card stat-card-green">
+          ${stat3dChrome('green')}
+          <div class="billing-mini-3d-content">
+            <div class="billing-mini-top">
+              <span class="billing-mini-icon" style="color:#0ba875;background:#e5faf2">✓</span>
+              <span>Tagihan lunas</span>
+            </div>
+            <strong>${currentPaid.length}</strong><small>Dari ${currentInvoices.length} tagihan</small>
+            <div class="progress"><span style="width:${collectionRate}%;background:#10b981"></span></div>
           </div>
-          <strong>${currentPaid.length}</strong><small>Dari ${currentInvoices.length} tagihan</small>
-          <div class="progress"><span style="width:${collectionRate}%;background:#10b981"></span></div>
         </div>
-        <div class="billing-mini">
-          <div class="billing-mini-top">
-            <span class="billing-mini-icon" style="color:#ef7805;background:#fff0dd">!</span>
-            <span>Segera jatuh tempo</span>
+        <div class="billing-mini stat-3d-card stat-puma-card stat-card-orange">
+          ${stat3dChrome('orange')}
+          <div class="billing-mini-3d-content">
+            <div class="billing-mini-top">
+              <span class="billing-mini-icon" style="color:#ef7805;background:#fff0dd">!</span>
+              <span>Segera jatuh tempo</span>
+            </div>
+            <strong>${metrics.dueSoon}</strong><small>Dalam tiga hari</small>
+            <div class="progress"><span style="width:${Math.min(100, metrics.dueSoon * 10)}%;
+              background:#ff8a19"></span></div>
           </div>
-          <strong>${metrics.dueSoon}</strong><small>Dalam tiga hari</small>
-          <div class="progress"><span style="width:${Math.min(100, metrics.dueSoon * 10)}%;
-            background:#ff8a19"></span></div>
         </div>
-        <div class="billing-mini">
-          <div class="billing-mini-top">
-            <span class="billing-mini-icon" style="color:#e54868;background:#ffebf0">×</span>
-            <span>Pelanggan isolir</span>
+        <div class="billing-mini stat-3d-card stat-puma-card stat-card-rose">
+          ${stat3dChrome('rose')}
+          <div class="billing-mini-3d-content">
+            <div class="billing-mini-top">
+              <span class="billing-mini-icon" style="color:#e54868;background:#ffebf0">×</span>
+              <span>Pelanggan isolir</span>
+            </div>
+            <strong>${metrics.isolated}</strong><small>Administrasi manual</small>
+            <div class="progress"><span style="width:${Math.min(100, metrics.isolated * 10)}%;
+              background:#ef476f"></span></div>
           </div>
-          <strong>${metrics.isolated}</strong><small>Administrasi manual</small>
-          <div class="progress"><span style="width:${Math.min(100, metrics.isolated * 10)}%;
-            background:#ef476f"></span></div>
         </div>
+      </div>
       </div>
     </section>
     <section class="dashboard-panel recent-payments">
