@@ -1954,6 +1954,7 @@ padding:0
 .stat-card-orange{--stat-accent:#ef7805;--stat-soft:#fff4e7;--stat-border:#ffd8aa}
 .stat-card-blue{--stat-accent:#1676e8;--stat-soft:#edf6ff;--stat-border:#c9e0ff}
 .stat-card-zinc{--stat-accent:#52525b;--stat-soft:#f4f4f5;--stat-border:#d4d4d8}
+.stat-card-rose{--stat-accent:#e54868;--stat-soft:#fff0f3;--stat-border:#ffcbd6}
 
 .stat-puma-card{
   border-color:var(--stat-border)!important;
@@ -2088,6 +2089,7 @@ padding:0
 .puma-banner-orange{--stat-accent:#ef7805}
 .puma-banner-blue{--stat-accent:#1676e8}
 .puma-banner-zinc{--stat-accent:#52525b}
+.puma-banner-rose{--stat-accent:#e54868}
 
 /* Dashboard KPI integration */
 .metric-card.stat-puma-card{
@@ -2148,6 +2150,118 @@ padding:0
 .petty-summary .stat-value,
 .petty-book-summary .stat-value{
   font-size:clamp(1.2rem,1.9vw,1.55rem);
+}
+
+
+/* =========================================================
+   Dashboard secondary panels — full 3D coverage
+   ========================================================= */
+.dashboard-3d-panel{
+  min-height:100%;
+}
+.dashboard-3d-panel .dashboard-panel-3d-content{
+  position:relative;
+  z-index:5;
+  height:100%;
+  transform:translateZ(32px);
+}
+.dashboard-3d-panel .panel-heading{
+  transform:translateZ(16px);
+}
+.dashboard-3d-panel .donut{
+  transform:translateZ(28px);
+}
+.dashboard-3d-panel .status-legend,
+.dashboard-3d-panel .trend-wrap,
+.dashboard-3d-panel .chart-legend{
+  position:relative;
+  z-index:5;
+  transform:translateZ(18px);
+}
+
+/* Large graph cards move a little softer than KPI cards */
+.dashboard-grid .dashboard-3d-panel.stat-3d-card{
+  transform:
+    perspective(900px)
+    translate3d(calc(var(--stat-tx) * .62),calc(var(--stat-ty) * .62),0)
+    rotateX(calc(var(--stat-rx) * .68))
+    rotateY(calc(var(--stat-ry) * .68));
+}
+.dashboard-grid .dashboard-3d-panel.stat-3d-card:hover{
+  transform:
+    perspective(900px)
+    translate3d(calc(var(--stat-tx) * .62),calc((var(--stat-ty) * .62) - 5px),16px)
+    rotateX(calc(var(--stat-rx) * .68))
+    rotateY(calc(var(--stat-ry) * .68))
+    scale(1.012);
+}
+
+/* Ringkasan penagihan: premium frame, mini cards are the moving elements */
+.dashboard-3d-frame{
+  position:relative;
+  isolation:isolate;
+  overflow:hidden;
+  border-color:var(--stat-border)!important;
+  box-shadow:
+    0 2px 5px rgba(15,23,42,.04),
+    0 14px 32px rgba(15,23,42,.08),
+    inset 0 1px 0 rgba(255,255,255,.86);
+}
+.dashboard-3d-frame > .stat-3d-shine,
+.dashboard-3d-frame > .stat-3d-glare{
+  opacity:.26;
+}
+.dashboard-3d-frame > .puma-banner{
+  opacity:.62;
+}
+.dashboard-billing-content{
+  position:relative;
+  z-index:5;
+}
+.billing-mini.stat-3d-card{
+  min-height:164px;
+  padding:15px;
+  transform:
+    perspective(700px)
+    translate3d(var(--stat-tx),var(--stat-ty),0)
+    rotateX(var(--stat-rx))
+    rotateY(var(--stat-ry));
+}
+.billing-mini.stat-3d-card:hover{
+  transform:
+    perspective(700px)
+    translate3d(var(--stat-tx),calc(var(--stat-ty) - 7px),22px)
+    rotateX(var(--stat-rx))
+    rotateY(var(--stat-ry))
+    scale(1.035);
+}
+.billing-mini-3d-content{
+  position:relative;
+  z-index:5;
+  transform:translateZ(44px);
+}
+.billing-mini.stat-puma-card .billing-mini-icon{
+  transform:translateZ(20px);
+  box-shadow:
+    0 8px 18px rgba(23,31,70,.12),
+    inset 0 1px 0 rgba(255,255,255,.55);
+}
+.billing-mini.stat-puma-card strong{
+  position:relative;
+  z-index:6;
+  transform:translateZ(26px);
+  text-shadow:0 7px 16px rgba(17,21,45,.09);
+}
+.billing-mini.stat-puma-card .progress{
+  position:relative;
+  z-index:6;
+  transform:translateZ(14px);
+}
+
+/* Avoid clipped perspective around dashboard card rows */
+.dashboard-grid,
+.billing-cards{
+  perspective:1200px;
 }
 
 /* Reduced motion and touch devices */
