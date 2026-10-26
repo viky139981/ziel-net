@@ -1471,16 +1471,44 @@ function pettyPeriodPicker(finance) {
 }
 function pettyMetricCards(finance) {
   return `<div class="petty-summary">
-    <article class="card">Pemasukan / Top Up<strong>${rup(finance.incomePeriodTotal)}</strong>
+    <article class="card stat-3d-card">Pemasukan / Top Up<strong>${rup(finance.incomePeriodTotal)}</strong>
       <small>${finance.incomesPeriod.length} pembayaran pelanggan pada periode pilihan</small></article>
-    <article class="card">Pengeluaran<strong>${rup(finance.expensePeriodTotal)}</strong>
+    <article class="card stat-3d-card">Pengeluaran<strong>${rup(finance.expensePeriodTotal)}</strong>
       <small>${finance.expensesPeriod.length} transaksi aktif pada periode pilihan</small></article>
-    <article class="card">Selisih periode<strong>${rup(finance.incomePeriodTotal-finance.expensePeriodTotal)}</strong>
+    <article class="card stat-3d-card">Selisih periode<strong>${rup(finance.incomePeriodTotal-finance.expensePeriodTotal)}</strong>
       <small>Pemasukan periode dikurangi pengeluaran periode</small></article>
-    <article class="card">Saldo bersih tercatat<strong>${rup(finance.balance)}</strong>
+    <article class="card stat-3d-card">Saldo bersih tercatat<strong>${rup(finance.balance)}</strong>
       <small>Akumulasi semua periode yang tersedia</small></article>
   </div>`;
 }
+function stat3dPointerMove(event) {
+  if (!window.matchMedia('(hover:hover) and (pointer:fine)').matches) return;
+  const card = event.target.closest?.('.stat-3d-card');
+  if (!card) return;
+  const rect = card.getBoundingClientRect();
+  const px = Math.max(0, Math.min(1, (event.clientX - rect.left) / rect.width));
+  const py = Math.max(0, Math.min(1, (event.clientY - rect.top) / rect.height));
+  const rotateY = (px - .5) * 10;
+  const rotateX = (.5 - py) * 8;
+  card.style.setProperty('--stat-rx', rotateX.toFixed(2) + 'deg');
+  card.style.setProperty('--stat-ry', rotateY.toFixed(2) + 'deg');
+  card.style.setProperty('--stat-mx', (px * 100).toFixed(1) + '%');
+  card.style.setProperty('--stat-my', (py * 100).toFixed(1) + '%');
+}
+
+function stat3dPointerOut(event) {
+  const card = event.target.closest?.('.stat-3d-card');
+  if (!card) return;
+  if (event.relatedTarget && card.contains(event.relatedTarget)) return;
+  card.style.setProperty('--stat-rx', '0deg');
+  card.style.setProperty('--stat-ry', '0deg');
+  card.style.setProperty('--stat-mx', '50%');
+  card.style.setProperty('--stat-my', '50%');
+}
+
+document.addEventListener('pointermove', stat3dPointerMove);
+document.addEventListener('pointerout', stat3dPointerOut);
+
 function pettyCaution() {
   return `<div class="petty-note"><b>Pencatatan Petty Cash dimulai 1 Oktober 2026.</b>
     Transaksi sebelum tanggal tersebut tidak masuk pemasukan, pengeluaran, saldo, atau Buku Kas.
@@ -1744,13 +1772,13 @@ function pettyBook() {
       <div class="muted">${esc(range.label)} · ${visible.length} transaksi</div></div></div>
     ${pettyReadyNotice()}${pettyCaution()}
     <section class="petty-book-summary">
-      <article class="card">Saldo Kas Berjalan<strong>${rup(cashRunning)}</strong>
+      <article class="card stat-3d-card">Saldo Kas Berjalan<strong>${rup(cashRunning)}</strong>
         <small>Berasal dari ${incomeCount} transaksi pemasukan pada periode filter</small></article>
-      <article class="card">Pemasukan<strong>${rup(income)}</strong>
+      <article class="card stat-3d-card">Pemasukan<strong>${rup(income)}</strong>
         <small>${incomeCount} transaksi pemasukan pada periode filter</small></article>
-      <article class="card">Pengeluaran<strong>${rup(expense)}</strong>
+      <article class="card stat-3d-card">Pengeluaran<strong>${rup(expense)}</strong>
         <small>${expenseCount} transaksi pengeluaran pada periode filter</small></article>
-      <article class="card">Saldo Akhir<strong>${rup(closing)}</strong>
+      <article class="card stat-3d-card">Saldo Akhir<strong>${rup(closing)}</strong>
         <small>Saldo Kas Berjalan − Pengeluaran</small></article>
     </section>
     <section class="panel petty-book-filter no-print">
